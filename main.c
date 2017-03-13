@@ -1,518 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
-#include <string.h>
+#include "list.h"
 
-typedef struct node {
-    struct node *next;
-    struct node *prev;
-    char*firstname;
-    char*lastname;
-    char*email;
-    char*phone;
-    char*birthdate;
-    char*address;
-}node_t;
 
-typedef struct list{
-    node_t*head;
-}list_t;
-
-list_t*createList(){
-    list_t*myList=malloc(sizeof(list_t));
-    myList->head=NULL;
-    return myList;
-}
-
-void deleteList(list_t*list) {
-    node_t*f=list->head;
-    while(f!=NULL) {
-        node_t *todelete = f;
-        f = f->next;
-        free(todelete);
-    }
-
-    free(list);
-}
-
-node_t*createNode(char*firstname, char*lastname,char*email,char*phone,char*address,char*birthdate){
-    node_t*q=NULL;
-    q=malloc(sizeof(node_t));
-    q->next=NULL;
-    q->prev=NULL;
-    q->firstname=firstname;
-    q->lastname=lastname;
-    q->address=address;
-    q->email=email;
-    q->birthdate=birthdate;
-    q->phone=phone;
-
-
-
-    return q;
-}
-
-void printList(list_t*l){
-
-    if(l->head==NULL){
-        printf("%s","Lista jest pusta");
-        return;
-    }
-    node_t*f=l->head;
-    while(f!=NULL){
-        printf("%s%s",f->firstname,"->");
-        f=f->next;
-    }
-    printf("%s\n","NULL");
-}
-
-void printListL(list_t*l){
-
-    if(l->head==NULL){
-        printf("%s","Lista jest pusta");
-        return;
-    }
-    node_t*f=l->head;
-    while(f!=NULL){
-        printf("%s%s",f->lastname,"->");
-        f=f->next;
-    }
-    printf("%s\n","NULL");
-}
-
-void addNodeEnd(list_t*list,char*firstname,char*lastname,char*email,char*phone,char*address,char*birthdate){
-
-    node_t*new_node=malloc(sizeof(node_t));
-    new_node->firstname=firstname;
-    new_node->lastname=lastname;
-    new_node->email=email;
-    new_node->phone=phone;
-    new_node->address=address;
-    new_node->birthdate=birthdate;
-    new_node->next=NULL;
-    new_node->prev=NULL;
-
-    if(list->head==NULL){
-        list->head=new_node;
-        new_node->next=NULL;
-        new_node->prev=NULL;
-    }
-    else {
-        node_t*first=list->head;
-        while (first->next != NULL) {
-            first = first->next;
-        }
-
-        first->next = new_node;
-        new_node->next = NULL;
-        new_node->prev = first;
-    }
-}
-
-bool findElement(list_t*list,node_t*node){
-
-
-    if(list->head==NULL){
-        printf("%s","The list is empty.Cannot find anything");
-        return false;
-    }
-
-    node_t*first=list->head;
-    while(first!=NULL){
-        if(first->firstname==node->firstname && first->lastname==node->lastname){
-            return true;
-        }
-        else{
-            first=first->next;
-        }
-    }
-    return false;
-
-}
-
-
-void deleteElement(list_t*list,node_t*q){
-
-    if(findElement(list,q)==false){
-        printf("%s","The element is not in the list or the list is already empty");
-        return;
-    }
-
-    node_t*first=list->head;
-
-    while(first!=NULL && first!=q){
-        first=first->next;
-    }
-
-    if(first==q) {
-        if (first->prev == NULL) {
-
-
-            node_t *todelete = first;
-            list->head = first->next;
-            if (list->head != NULL) {
-                list->head->prev = NULL;
-            }
-            free(todelete);
-
-
-        }
-
-        else{
-            node_t *todelete = first;
-            first->prev->next = first->next;
-            if (first->next != NULL) {
-                first->next->prev = first->prev;
-            }
-            free(todelete);
-
-        }
-    }
-
-}
-
-//You can choose how  you would like to sort.
-//Option 0 - firstname, 1-lastname, 2-email, 3-phone
-
-bool compare(node_t*current,node_t*maxval,int option){
-    switch(option){
-        case 0:
-            if(strcmp(current->firstname,maxval->firstname)<0){
-                return true;
-            }
-            else{
-                return false;
-            }
-
-        case 1:
-            if(strcmp(current->lastname,maxval->lastname)<0){
-                return true;
-            }
-            else{
-                return false;
-            }
-        case 3:
-            if(strcmp(current->email,maxval->email)<0){
-                return true;
-            }
-            else{
-                return false;
-            }
-        case 4:
-            if(strcmp(current->phone,maxval->phone)<0){
-                return true;
-            }
-            else{
-                return false;
-            }
-    }
-
-}
-
-list_t* selection_sort(list_t*list,int option){
-
-
-    list_t*sorted=createList();
-    node_t*maxval;
-    node_t*current;
-
-    while(list->head!=NULL){
-
-        maxval=list->head;
-        current=list->head;
-
-        while(current!=NULL){
-            if(compare(current,maxval,option)){
-                maxval=current;
-
-            }
-            current=current->next;
-        }
-        addNodeEnd(sorted,maxval->firstname,maxval->lastname,maxval->email,maxval->phone,maxval->address,maxval->birthdate);
-        deleteElement(list,maxval);
-    }
-    return sorted;
-}
-////////////////////////////////////////////////////////////////////////////////////////////////////////
-//DRZEWO
-
-typedef struct BSTNode{
-    struct BSTNode*parent;
-    struct BSTNode*left;
-    struct BSTNode*right;
-    char*firstname;
-    char*lastname;
-}BSTNode;
-
-typedef struct BSTTree{
-    BSTNode*root;
-}BSTTree;
-
-BSTNode*createBSTNode(char*firstname,char*lastname){
-    BSTNode*node=malloc(sizeof(BSTNode));
-    node->left=NULL;
-    node->right=NULL;
-    node->parent=NULL;
-    node->firstname=firstname;
-    node->lastname=lastname;
-    return node;
-}
-
-BSTTree*createTree(){
-    BSTTree*tree=malloc(sizeof(BSTTree));
-    tree->root=NULL;
-    return tree;
-}
-
-bool insert(BSTTree*tree,char*firstname, char*lastname){
-    BSTNode*node= createBSTNode(firstname, lastname);
-    if(tree->root==NULL){
-        tree->root=node;
-        return true;
-    }
-    if(tree->root->firstname==node->firstname) return false;
-    if(strcmp(node->firstname,tree->root->firstname)>0){
-        if(tree->root->right!=NULL) return insert(tree->root->right,node->firstname,node->lastname);
-        else{
-            tree->root->right=node;
-            node->parent=tree->root;
-            node->right=NULL;
-            node->left=NULL;
-            return true;
-        }
-    }
-    else{
-        if(tree->root->left!=NULL) return insert(tree->root->left,node->firstname,node->lastname);
-        else{
-            tree->root->left=node;
-            node->parent=tree->root;
-            node->right=NULL;
-            node->left=NULL;
-            return true;
-        }
-    }
-
-}
-
-void printTree(BSTNode*node){
-    if(node==NULL){
-        return;
-    }
-    printTree(node->left);
-    printf("%s%s",node->firstname," ");
-    printTree(node->right);
-}
-
-BSTNode * TreeMax(BSTTree* tree){
-
-    BSTNode * node = tree->root;
-    if(node==NULL) return NULL;;
-
-    while(node->right!=NULL){
-        node=node->right;
-
-    }
-    return node;
-
-}
-
-BSTNode * TreeMin(BSTTree* tree){
-
-    BSTNode * node = tree->root;
-    if(node==NULL) return NULL;;
-
-    while(node->left!=NULL){
-        node=node->left;
-
-    }
-    return node;
-
-}
-
-
-
-BSTNode*FindInTree2(BSTTree*tree,char*name){
-
-    BSTNode*node=tree->root;
-
-    if(node==NULL) return NULL;
-
-    while(node!=NULL){
-
-        if(node->firstname==name) return node;
-
-        if(strcmp(node->firstname,name)<0){
-            node=node->right;
-        }
-        else if(strcmp(node->firstname,name)>0){
-            node=node->left;
-        }
-
-    }
-
-}
-
-
-bool FindInTreeb(BSTTree*tree,char*name) {
-
-    BSTNode *node = tree->root;
-
-    if (node == NULL) return false;
-
-    while (node != NULL) {
-
-        if (node->firstname == name) return true;
-
-        if (strcmp(node->firstname, name) < 0) {
-            node = node->left;
-        } else if (strcmp(node->firstname, name) > 0) {
-            node = node->right;
-        }
-
-    }
-    return false;
-
-}
-
-BSTNode*findMin(BSTNode*node){
-
-    if(node==NULL) return NULL;
-    while(node->left!=NULL){
-        node=node->left;
-    }
-    return node;
-}
-
-BSTNode*findMax(BSTNode*node){
-    if(node==NULL) return NULL;
-    while(node->right!=NULL){
-        node=node->right;
-    }
-    return node;
-}
-
-BSTNode*succ(BSTNode*node){         //nastepca
-
-    if(node==NULL){
-
-        return NULL;
-    }
-
-    if(node->right!=NULL) return findMin(node->right);
-    else {
-        BSTNode *y = node->parent;
-        BSTNode *x = node;
-
-        while (y != NULL && y->right == x) {
-            x = y;
-            y = y->parent;
-        }
-        if(y==NULL){
-            printf("%s","This node does not have succ");
-        }
-        return y;
-    }
-
-}
-
-BSTNode*anc(BSTNode*node){         //poprzednik
-
-    if(node==NULL){
-
-        return NULL;
-    }
-
-    if(node->left!=NULL) return findMax(node->left);
-    else {
-        BSTNode *y = node->parent;
-        BSTNode *x = node;
-
-        while (y != NULL && y->left == x) {
-            x = y;
-            y = y->parent;
-        }
-        if(y==NULL){
-            printf("%s","This node does not have ancestor");
-        }
-        return y;
-    }
-
-}
-
-BSTNode* delete(BSTNode*root,char*firstname){
-
-
-    if(root==NULL) return root;
-    else if(strcmp(root->firstname,firstname)>0){
-
-        root->left=delete(root->left,firstname);
-    }
-    else if(strcmp(root->firstname,firstname)<0){
-        root->right=delete(root->right,firstname);
-    }
-    else{
-        //there is no child
-
-        if(root->left==NULL && root->right==NULL){
-
-            free(root);
-            root->firstname=NULL;
-            root=NULL;
-
-           // BSTNode*p=createBSTNode("MMM","pusty");
-            return root;
-        }
-        //there is one child
-        else if(root->left == NULL){
-            BSTNode*tmp=root;
-            root=root->right;
-            free(tmp);
-            return root;
-        }
-        else if(root->right == NULL){
-            BSTNode*tmp=root;
-            root=root->left;
-            free(tmp);
-            return root;
-        }
-        else{
-            BSTNode*tmp=findMin(root->right);
-            root->firstname=tmp->firstname;
-            root->right=delete(root->right,tmp->firstname);
-            return root;
-
-        }
-
-    }
-
-}   //not working at all
-
-void deleteTree(BSTNode*root){
-    if(root!=NULL){
-        deleteTree(root->left);
-        deleteTree(root->right);
-        free(root);
-
-    }
-}
-
-void deleteTreeAll(BSTTree*tree){
-    if(tree->root!=NULL) deleteTree(tree->root);
-    tree->root=NULL;
-}
-
-//void treeSort(BSTTree*tree){
-
-//}
 
 int main() {
 
-    list_t*list=createList();
+  //  list_t*list=createList();
 
-
-
-    //node_t*a=createNode("Agnieszka","pierzchala","a","b","c","d");
-    //addNodeEnd(list,a->firstname,a->lastname,a->email,a->phone,a->address,a->birthdate);
+  //  node_t*a=createNode("Agnieszka","pierzchala","a","b","c","d");
+  //  addNodeEnd(list,a->firstname,a->lastname,a->email,a->phone,a->address,a->birthdate);
+  //  printList(list);
     //node_t*c=createNode("muma","the dog","idonthave","9999","aaa","ddd");
     //addNodeEnd(list,c->firstname,c->lastname,c->email,c->phone,c->address,c->birthdate);
     //node_t*m=createNode("haha","ble","a","b","c","d");
@@ -522,30 +20,42 @@ int main() {
     //list_t*s=selection_sort(list,1);
     //printListL(s);
 
-    BSTTree* tree=createTree();
-   
-    //insert(tree,"Agnieszka","Pierzchala");
-    //insert(tree,"Muma","The dog");
-    //printTree(tree->root);
-    //BSTNode*root=tree->root;
-    //BSTNode*node1=delete(root,"Agnieszka");
+  //  BSTTree* tree=createTree();
+  //  BSTNode*root=tree->root;
+    //root=insert3(root,"Agnieszka","Pierzchala");
+
+    //for(int i=0;i<100;i++){
+      //root=insert3(root,"Agnieszka","Pierzchala");
+  //  }
     //printTree(root);
-    //BSTNode*node2=delete(root,"Dominik");
-    //printTree(root);
-    //BSTNode*node3=delete(root,"Muma");
+    //printf("%s","tu usuwam");
+
+    //deleteTree(root);
+    //root=NULL;
+    //if(root==NULL){
+      //printf("%s","to jest puste");
+    //}
     //printTree(root);
 
-    BSTTree* newtree=createTree();
-    insert(newtree,"a","b");
-    BSTNode*root=newtree->root;
-     printTree(root);
-    deleteTreeAll(newtree);
-    if(newtree->root!=NULL){
-        printf("%s","The tree is not empty");
-    }
-    else{
-        printf("%s","Tree is empty");
-    }
+
+
+
+  list_t*list=createList();
+  list_t*sorted=createList();
+
+  for(int i=0;i<5;i++){
+    addNodeEnd(list,"a","b","c","d","e","f");
+  }
+  printList(list);
+ sorted=selection_sort(list,1);
+
+ printListL(sorted);
+ printf("%d",findContact(sorted,"a","b"));
+ deleteContact(sorted,"a","b");
+ printList(sorted);
+
+
+
 
 
 }
