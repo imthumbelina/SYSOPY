@@ -73,11 +73,13 @@ list_t* selection_sort(list_t*list,int option);
 
 BSTNode* createBSTNode(char*firstname,char*lastname,char*email,char*phone,char*birthdate,char*address);
 
-BSTTree*createTree();
+BSTNode* createTree();
 
 
 
-BSTNode* insert3(BSTNode*root, char*firstname, char*lastname,char*email,char*phone,char*birthdate,char*address);
+
+
+bool insert(BSTNode**root,char*firstname, char*lastname,char*email,char*phone,char*birthdate,char*address);
 
 void printTree(BSTNode*node);
 

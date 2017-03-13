@@ -285,39 +285,45 @@ BSTNode* createBSTNode(char*firstname,char*lastname,char*email,char*phone,char*b
     return node;
 }
 
-BSTTree* createTree(){
-    BSTTree*tree=malloc(sizeof(BSTTree));
-   // tree->head->firstname
-    tree->root=NULL;
-    return tree;
+BSTNode* createTree(){
+    BSTNode*root=malloc(sizeof(BSTNode));
+
+    root=NULL;
+    return root;
 }
 
 
+bool insert(BSTNode**root_ptr,char*firstname, char*lastname,char*email,char*phone,char*birthdate,char*address){
+      BSTNode* root= *root_ptr;
+    if(root==NULL){
+        BSTNode*node= createBSTNode(firstname, lastname,email,phone,birthdate,address);
+        *root_ptr=node;
+        return true;
+    }
+    //if(root->firstname==node->firstname) return false;
+    if(strcmp(firstname,root->firstname)>0){
+        if(root->right!=NULL) return insert(&root->right,firstname,lastname,email,phone,birthdate,address);
+        BSTNode*node= createBSTNode(firstname, lastname,email,phone,birthdate,address);
+        root->right=node;
+        node->parent=root;
+        node->right=NULL;
+        node->left=NULL;
+        return true;
 
+    }
+    else{
+        if(root->left!=NULL) return insert(&root->left,firstname,lastname,email,phone,birthdate,address);
+        BSTNode*node= createBSTNode(firstname, lastname,email,phone,birthdate,address);
+        root->left=node;
+        node->parent=root;
+        node->right=NULL;
+        node->left=NULL;
+        return true;
 
+    }
 
-BSTNode* insert3(BSTNode*root, char*firstname, char*lastname,char*email,char*phone,char*birthdate,char*address){
-    BSTNode*node= createBSTNode(firstname, lastname,email,phone,birthdate,address);
-  if(root==NULL){
-    root=node;
-    root->left=NULL;
-    root->right=NULL;
-    root->parent=NULL;
-    root->firstname=firstname;
-    root->lastname=lastname;
-    root->email=email;
-    root->phone=phone;
-    root->birthdate=birthdate;
-    root->address=address;
-  }
-  else if(strcmp(root->firstname,firstname)>0){
-    root->left=insert3(root->left,firstname,lastname,email,phone,birthdate,address);
-  }
-  else{
-    root->right=insert3(root->right,firstname,lastname,email,phone,birthdate,address);
-  }
-  return root;
 }
+
 
 void printTree(BSTNode*node){
     if(node==NULL){
